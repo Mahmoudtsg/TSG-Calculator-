@@ -1,0 +1,602 @@
+/* ===================================
+   Print Styles for TSG Calculator
+   Show: Country, Employee Info, Business Outputs, Payroll Summary, Breakdown
+   =================================== */
+
+@media print {
+    /* CRITICAL: Force browsers to preserve ALL colors and styles */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    /* Remove shadows and filters that cause washed-out appearance */
+    * {
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+    }
+    
+    /* CRITICAL: Force full opacity - prevents washed-out text */
+    body, body *, 
+    .results-section, .results-section *,
+    .results-card, .results-card *,
+    .payroll-summary, .payroll-summary *,
+    .breakdown-table, .breakdown-table * {
+        opacity: 1 !important;
+        color: #000 !important;
+    }
+    
+    /* Hide elements we DON'T want in PDF */
+    .header,
+    .logo,
+    img:not(.print-logo),
+    .engagement-type-section,
+    .engagement-section,
+    .engagement-selector,
+    .engagement-options,
+    .selector-section,
+    .input-section,
+    .advanced-panel,
+    .export-actions,
+    .export-buttons,
+    #export-pdf-btn,
+    #allocation-export-pdf-btn,
+    #allocation-print-btn,
+    .footer,
+    .calculate-btn,
+    .calculate-btn-wrapper,
+    .action-btn,
+    .advanced-toggle-btn,
+    .advanced-toggle-wrapper,
+    #formula-toggle,
+    .formula-content,
+    .collapsible-header,
+    .loading-indicator,
+    .error-message,
+    .info-icon,
+    button,
+    input,
+    select,
+    textarea,
+    .b2b-inputs,
+    .employee-inputs,
+    .allocation-inputs,
+    #allocation-inputs,
+    .business-inputs,
+    .add-client-btn,
+    .btn-remove {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* Hide salary benchmark by default */
+    #salary-benchmark-card {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* Show salary benchmark ONLY in Employee mode for Switzerland */
+    body.print-employee-mode.print-switzerland #salary-benchmark-card {
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    /* Hide entire Formula/Calculation Steps card */
+    .results-card:has(#formula-toggle),
+    .results-card:has(.formula-content) {
+        display: none !important;
+    }
+    
+    /* Hide "Other" section in Payroll Summary */
+    .payroll-line:nth-child(3) {
+        display: none !important;
+    }
+    
+    /* Hide Detailed Breakdown and Business Outputs in B2B mode */
+    .b2b-mode .results-card:has(#breakdown-table),
+    .b2b-mode #breakdown-table,
+    .b2b-mode .results-card:has(#business-outputs),
+    .b2b-mode #business-outputs {
+        display: none !important;
+    }
+    
+    /* Page setup */
+    @page {
+        margin: 1.5cm;
+        size: A4 portrait;
+    }
+    
+    /* Body setup */
+    html, body {
+        width: 100% !important;
+        height: auto !important;
+        background: white !important;
+        color: black !important;
+        font-family: 'Inter', Arial, sans-serif !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    body {
+        font-size: 11pt !important;
+        line-height: 1.5 !important;
+        color: #000 !important;
+    }
+    
+    /* Main container */
+    .container {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* ====================================
+       PRINT HEADER - TSG Logo Only
+       ==================================== */
+    
+    .print-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding: 0.5cm 0 0.5cm 0 !important;
+        margin-bottom: 0.6cm !important;
+        border-bottom: 2pt solid #ED1C24 !important;
+        page-break-inside: avoid !important;
+        opacity: 1 !important;
+    }
+    
+    .print-logo {
+        display: block !important;
+        height: 1.5cm !important;
+        width: auto !important;
+        opacity: 1 !important;
+    }
+    
+    /* Hide text branding - logo only */
+    .print-branding {
+        display: none !important;
+    }
+    
+    .results-section::before {
+        content: '';
+        display: none !important;
+    }
+    
+    /* Create a print summary section with input details */
+    #results-section,
+    .results-section {
+        display: block !important;
+        background: white !important;
+        color: #000 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    /* Input summary box (we'll add this via JavaScript) */
+    .print-input-summary {
+        display: block !important;
+        padding: 0.5cm !important;
+        margin-bottom: 0.6cm !important;
+        border: 2pt solid #333 !important;
+        background: #f8f8f8 !important;
+        page-break-inside: avoid !important;
+        opacity: 1 !important;
+    }
+    
+    .print-input-summary h3 {
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        margin: 0 0 0.3cm 0 !important;
+        opacity: 1 !important;
+    }
+    
+    .print-input-summary .input-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 0.15cm 0 !important;
+        border-bottom: 1pt solid #ddd !important;
+        opacity: 1 !important;
+    }
+    
+    .print-input-summary .input-row:last-child {
+        border-bottom: none !important;
+    }
+    
+    .print-input-summary .input-label {
+        font-weight: 500 !important;
+        color: #000 !important;
+        opacity: 1 !important;
+    }
+    
+    .print-input-summary .input-value {
+        font-weight: bold !important;
+        color: #000 !important;
+        opacity: 1 !important;
+    }
+    
+    /* ====================================
+       RESULTS CARDS
+       ==================================== */
+    
+    .results-card {
+        display: block !important;
+        page-break-inside: avoid !important;
+        margin-bottom: 0.8cm !important;
+        border: 2pt solid #333 !important;
+        padding: 0.5cm !important;
+        background: white !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    .results-card h2 {
+        font-size: 16pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        margin: 0 0 0.5cm 0 !important;
+        padding-bottom: 0.3cm !important;
+        border-bottom: 2pt solid #ED1C24 !important;
+        opacity: 1 !important;
+    }
+    
+    .results-card h3 {
+        font-size: 13pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        margin: 0.4cm 0 0.3cm 0 !important;
+        opacity: 1 !important;
+    }
+    
+    /* ====================================
+       PAYROLL SUMMARY
+       ==================================== */
+    
+    .payroll-summary {
+        display: block !important;
+        background: white !important;
+        opacity: 1 !important;
+    }
+    
+    .payroll-section {
+        display: block !important;
+        margin-bottom: 0.4cm !important;
+        opacity: 1 !important;
+    }
+    
+    .payroll-item {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 0.3cm 0.4cm !important;
+        margin-bottom: 0.15cm !important;
+        border: 1pt solid #ccc !important;
+        background: #fafafa !important;
+        page-break-inside: avoid !important;
+        opacity: 1 !important;
+    }
+    
+    .payroll-item.highlight {
+        background: #e8e8e8 !important;
+        border: 2pt solid #000 !important;
+        font-weight: bold !important;
+        opacity: 1 !important;
+    }
+    
+    .payroll-item label {
+        font-size: 11pt !important;
+        font-weight: 500 !important;
+        color: #000 !important;
+        opacity: 1 !important;
+    }
+    
+    .payroll-item .value {
+        font-size: 12pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        opacity: 1 !important;
+        text-align: right !important;
+    }
+    
+    /* ====================================
+       BUSINESS OUTPUTS
+       ==================================== */
+    
+    #business-outputs {
+        display: block !important;
+        opacity: 1 !important;
+    }
+    
+    .business-output-item {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 0.3cm 0.4cm !important;
+        margin-bottom: 0.15cm !important;
+        border-left: 4pt solid #ED1C24 !important;
+        border-right: 1pt solid #ccc !important;
+        border-top: 1pt solid #ccc !important;
+        border-bottom: 1pt solid #ccc !important;
+        background: #f9f9f9 !important;
+        page-break-inside: avoid !important;
+        opacity: 1 !important;
+    }
+    
+    .business-output-item label {
+        font-size: 11pt !important;
+        font-weight: 500 !important;
+        color: #000 !important;
+        opacity: 1 !important;
+    }
+    
+    .business-output-item .value {
+        font-size: 12pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        opacity: 1 !important;
+        text-align: right !important;
+    }
+    
+    /* ====================================
+       BREAKDOWN TABLE
+       ==================================== */
+    
+    .breakdown-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin: 0.4cm 0 !important;
+        background: white !important;
+        opacity: 1 !important;
+    }
+    
+    .breakdown-table caption {
+        font-size: 12pt !important;
+        font-weight: bold !important;
+        color: #000 !important;
+        text-align: left !important;
+        margin-bottom: 0.3cm !important;
+        opacity: 1 !important;
+    }
+    
+    .breakdown-table th {
+        background: #333 !important;
+        color: white !important;
+        font-weight: bold !important;
+        font-size: 10pt !important;
+        padding: 0.3cm !important;
+        border: 1pt solid #000 !important;
+        text-align: left !important;
+        opacity: 1 !important;
+    }
+    
+    .breakdown-table td {
+        background: white !important;
+        color: #000 !important;
+        font-size: 10pt !important;
+        padding: 0.25cm !important;
+        border: 1pt solid #ccc !important;
+        opacity: 1 !important;
+    }
+    
+    .breakdown-table tbody tr:nth-child(even) td {
+        background: #f5f5f5 !important;
+    }
+    
+    .breakdown-table tfoot td {
+        background: #e8e8e8 !important;
+        font-weight: bold !important;
+        border-top: 2pt solid #000 !important;
+        opacity: 1 !important;
+    }
+    
+    /* ====================================
+       FORMULA SECTION
+       ==================================== */
+    
+    #formula-content {
+        display: block !important;
+        margin-top: 0.5cm !important;
+        page-break-inside: avoid !important;
+        opacity: 1 !important;
+    }
+    
+    .formula-item {
+        background: #f0f0f0 !important;
+        border: 1pt solid #999 !important;
+        padding: 0.2cm !important;
+        margin-bottom: 0.15cm !important;
+        font-size: 9pt !important;
+        color: #000 !important;
+        page-break-inside: avoid !important;
+        opacity: 1 !important;
+    }
+    
+    .formula-item strong {
+        color: #000 !important;
+        font-weight: bold !important;
+        opacity: 1 !important;
+    }
+    
+    /* ====================================
+       PAGE BREAKS - AGGRESSIVE APPROACH
+       ==================================== */
+    
+    h2, h3 {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
+    
+    /* Default: Keep cards together but allow natural flow */
+    .results-card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    .payroll-section {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    /* ===== SWISS SALARY BENCHMARK - ONE PAGE (CH Employee only) ===== */
+    body.print-employee-mode.print-switzerland #salary-benchmark-card {
+        page-break-before: always !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-before: page !important;
+        break-after: page !important;
+        break-inside: avoid-page !important;
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    body.print-employee-mode.print-switzerland #salary-benchmark {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    body.print-employee-mode.print-switzerland .salary-benchmark {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    /* ===== DETAILED BREAKDOWN - ONE PAGE (All Employee) ===== */
+    /* Target the parent results-card with breakdown-card class */
+    body.print-employee-mode .breakdown-card {
+        page-break-before: always !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-before: page !important;
+        break-after: page !important;
+        break-inside: avoid-page !important;
+    }
+    
+    /* Fallback: Target using :has() for modern browsers */
+    body.print-employee-mode .results-card:has(#breakdown-table),
+    body.print-employee-mode .results-card:has(.breakdown-table-wrapper) {
+        page-break-before: always !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-before: page !important;
+        break-after: page !important;
+        break-inside: avoid-page !important;
+    }
+    
+    /* Fallback: Use nth-child to target the breakdown card (it's typically the 3rd or 4th card) */
+    body.print-employee-mode #results-section > .results-card:nth-of-type(3) {
+        page-break-before: always !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-before: page !important;
+        break-after: page !important;
+        break-inside: avoid-page !important;
+    }
+    
+    /* Additional targeting for the wrapper and table */
+    body.print-employee-mode #breakdown-table {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    body.print-employee-mode .breakdown-table-wrapper {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    body.print-employee-mode .breakdown-table {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        page-break-before: auto !important;
+        page-break-after: auto !important;
+    }
+    
+    /* Prevent table rows from splitting */
+    body.print-employee-mode .breakdown-table tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    body.print-employee-mode .breakdown-table thead {
+        display: table-header-group !important;
+    }
+    
+    body.print-employee-mode .breakdown-table tbody {
+        display: table-row-group !important;
+    }
+    
+    /* ====================================
+       TEXT RENDERING
+       ==================================== */
+    
+    /* Force crisp text */
+    * {
+        -webkit-font-smoothing: antialiased !important;
+        -moz-osx-font-smoothing: grayscale !important;
+    }
+    
+    /* Force all text elements to be black */
+    p, span, div, td, th, label, strong, b, em, i, h1, h2, h3, h4, h5, h6 {
+        color: #000 !important;
+        opacity: 1 !important;
+    }
+    
+    /* ====================================
+       HIDE ICONS
+       ==================================== */
+    
+    i.fas, i.far, .fa, [class^="fa-"], [class*=" fa-"],
+    .info-icon, .tooltip {
+        display: none !important;
+    }
+    
+    /* ====================================
+       TIMESTAMP FOOTER
+       ==================================== */
+    
+    .results-section::after {
+        content: 'Generated: ' attr(data-print-date);
+        display: block;
+        margin-top: 1cm;
+        padding-top: 0.3cm;
+        border-top: 1pt solid #ccc;
+        font-size: 9pt;
+        color: #666;
+        text-align: center;
+        opacity: 1 !important;
+    }
+    
+    /* Also add timestamp to allocation results section */
+    #allocation-results-section::after {
+        content: 'Generated: ' attr(data-print-date);
+        display: block;
+        margin-top: 1cm;
+        padding-top: 0.3cm;
+        border-top: 1pt solid #ccc;
+        font-size: 9pt;
+        color: #666;
+        text-align: center;
+        opacity: 1 !important;
+    }
+    
+    /* ====================================
+       MODE ISOLATION FOR PRINT
+       Hide results from other modes when printing
+       ==================================== */
+    
+    /* When printing EMPLOYEE mode, hide B2B and Allocation results */
+    body.print-employee-mode #allocation-results-section,
+    body.print-employee-mode .allocation-results {
+        display: none !important;
+    }
+    
+    /* When printing B2B mode, hide Employee and Allocation results */
+    body.print-b2b-mode #allocation-results-section,
+    body.print-b2b-mode .allocation-results {
+        display: none !important;
+    }
+    
+    /* When printing ALLOCATION mode, hide Employee and B2B results */
+    body.print-allocation-mode #results-section {
+        display: none !important;
+    }
+}
