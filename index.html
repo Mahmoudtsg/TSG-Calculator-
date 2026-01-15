@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSG Salary & Cost Calculator</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/salaryBenchmark.css">
+    <link rel="stylesheet" href="css/print.css" media="print">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header with TSG Branding -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <img src="images/tsg-logo.png" alt="TSG Logo" class="logo">
+                <h1>Salary & Cost Calculator</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <div class="container">
+            <!-- Engagement Type Selector -->
+            <section class="engagement-section">
+                <div class="engagement-selector">
+                    <h3><i class="fas fa-user-tie"></i> Engagement Type</h3>
+                    <div class="engagement-options">
+                        <label class="engagement-option">
+                            <input type="radio" name="engagement-type" value="employee" checked>
+                            <div class="engagement-card">
+                                <i class="fas fa-user"></i>
+                                <h4>Employee</h4>
+                                <p>TSG Payroll</p>
+                            </div>
+                        </label>
+                        <label class="engagement-option">
+                            <input type="radio" name="engagement-type" value="b2b">
+                            <div class="engagement-card">
+                                <i class="fas fa-handshake"></i>
+                                <h4>B2B</h4>
+                                <p>Independent Contractor</p>
+                            </div>
+                        </label>
+                        <label class="engagement-option">
+                            <input type="radio" name="engagement-type" value="allocation">
+                            <div class="engagement-card">
+                                <i class="fas fa-chart-pie"></i>
+                                <h4>Allocation</h4>
+                                <p>Multi-Client Profitability</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Country & Mode Selector Section (Employee Only) -->
+            <section class="selector-section" id="employee-selectors">
+                <div class="selector-grid">
+                    <!-- Country Selector -->
+                    <div class="selector-group">
+                        <label for="country-select"><i class="fas fa-globe"></i> Payroll Country</label>
+                        <select id="country-select" class="country-select">
+                            <option value="CH" data-currency="CHF">Switzerland</option>
+                            <option value="RO" data-currency="RON">Romania</option>
+                            <option value="ES" data-currency="EUR">Spain</option>
+                        </select>
+                        <span class="currency-indicator" id="currency-indicator">CHF</span>
+                    </div>
+
+                    <!-- Calculation Mode Selector -->
+                    <div class="selector-group">
+                        <label for="calc-mode-select"><i class="fas fa-calculator"></i> Calculate From</label>
+                        <select id="calc-mode-select" class="mode-select">
+                            <option value="net">Net Salary</option>
+                            <option value="gross" selected>Gross Salary</option>
+                            <option value="total">Total Company Cost</option>
+                        </select>
+                    </div>
+
+                    <!-- Exchange Rate Input -->
+                    <div class="selector-group" id="exchange-rate-group">
+                        <label for="exchange-rate-input">
+                            <i class="fas fa-exchange-alt"></i> Exchange Rate to EUR
+                            <button type="button" id="refresh-rate-btn" class="refresh-btn" title="Refresh rate">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="rate-prefix" id="rate-prefix">1 EUR =</span>
+                            <input type="number" id="exchange-rate-input" class="input-field rate-input" value="0.9300" min="0.01" step="0.0001">
+                            <span class="currency-symbol" id="rate-currency">CHF</span>
+                        </div>
+                        <small class="rate-info" id="rate-update-info">Loading rate...</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- B2B Selector Section (B2B Only) -->
+            <!-- Exchange rate handled internally via FXService -->
+            <section class="selector-section" id="b2b-selectors" style="display: none;">
+            </section>
+
+            <!-- Input Section (Employee) -->
+            <section class="input-section" id="employee-inputs">
+                <div class="input-grid">
+                    <!-- Employee Name -->
+                    <div class="input-group">
+                        <label for="employee-name"><i class="fas fa-user"></i> Employee Name</label>
+                        <input type="text" id="employee-name" class="input-field" placeholder="e.g. John Doe">
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="input-group">
+                        <label for="date-of-birth"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+                        <input type="date" id="date-of-birth" class="input-field">
+                    </div>
+
+                    <!-- Role/Position -->
+                    <div class="input-group">
+                        <label for="employee-role"><i class="fas fa-briefcase"></i> Role / Position</label>
+                        <input type="text" id="employee-role" class="input-field" placeholder="e.g. Senior Developer">
+                    </div>
+
+                    <!-- Salary Period Selector -->
+                    <div class="input-group">
+                        <label for="salary-period"><i class="fas fa-calendar"></i> Salary Period</label>
+                        <select id="salary-period" class="input-field">
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+
+                    <!-- Primary Input -->
+                    <div class="input-group primary-input">
+                        <label for="primary-amount" id="primary-label">Gross Salary (Monthly)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="primary-amount" class="input-field" value="5000" min="0" step="0.01">
+                            <span class="currency-symbol" id="input-currency">CHF</span>
+                        </div>
+                    </div>
+
+                    <!-- Occupation Rate -->
+                    <div class="input-group">
+                        <label for="occupation-rate">
+                            <i class="fas fa-percentage"></i> Occupation Rate
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="occupation-rate" class="input-field" value="100" min="1" max="100" step="1">
+                            <span class="currency-symbol">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Calculator Toggle -->
+                    <div class="advanced-toggle-wrapper">
+                        <button type="button" id="advanced-toggle" class="advanced-toggle-btn">
+                            <i class="fas fa-cog"></i> Advanced Options
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Advanced Options Panel -->
+                <div id="advanced-panel" class="advanced-panel" style="display: none;">
+                    <div class="advanced-grid">
+                        <!-- Monthly Meal Benefits (Romania/Spain) -->
+                        <div class="input-group country-specific ro-es-only" style="display: none;">
+                            <label for="other-benefits">
+                                <i class="fas fa-utensils"></i> Monthly Meal Benefits
+                                <span class="tooltip" data-tooltip="Non-taxable meal benefits">ℹ️</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="other-benefits" class="input-field" value="0" min="0" step="0.01">
+                                <span class="currency-symbol" id="benefits-currency">CHF</span>
+                            </div>
+                        </div>
+
+                        <!-- Base Function Checkbox (Romania/Spain) -->
+                        <div class="input-group checkbox-group country-specific ro-es-only" style="display: none;">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="base-function">
+                                <span>Base Function (affects deductions)</span>
+                            </label>
+                        </div>
+
+                        <!-- Number of Dependents (Romania/Spain) -->
+                        <div class="input-group country-specific ro-es-only" style="display: none;">
+                            <label for="dependents">
+                                <i class="fas fa-users"></i> Number of Dependents
+                            </label>
+                            <select id="dependents" class="input-field">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4+</option>
+                            </select>
+                        </div>
+
+                        <!-- Tax Exemption (Romania only) -->
+                        <div class="input-group checkbox-group country-specific ro-only" style="display: none;">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="tax-exemption">
+                                <span id="tax-exemption-text">Tax Exemption (disabled persons)</span>
+                            </label>
+                        </div>
+
+                        <!-- Switzerland Specific: LPP Plan Mode -->
+                        <div class="input-group country-specific ch-only" style="display: none;">
+                            <label>
+                                Pension Plan (2026)
+                            </label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" id="lpp-mandatory" name="lpp-plan-mode" value="mandatory" checked>
+                                    <span>BVG Mandatory (capped at CHF 90,720)</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" id="lpp-super" name="lpp-plan-mode" value="super">
+                                    <span>Super-obligatory (uncapped)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Switzerland Specific: LPP Rate -->
+                        <div class="input-group country-specific ch-only" style="display: none;">
+                            <label for="lpp-rate">
+                                LPP Rate (Pension) %
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="lpp-rate" class="input-field" value="7" min="0" max="20" step="0.1">
+                                <span class="currency-symbol">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Switzerland Specific: LFP Employer Rate -->
+                        <div class="input-group country-specific ch-only" style="display: none;">
+                            <label for="lfp-rate">
+                                LFP Employer Rate %
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="lfp-rate" class="input-field" value="0.05" min="0.03" max="0.08" step="0.01">
+                                <span class="currency-symbol">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Switzerland Specific: LAA Non-Professional Rate -->
+                        <div class="input-group country-specific ch-only" style="display: none;">
+                            <label for="laa-nonprof-rate">
+                                LAA Non-Professional Rate %
+                                <span class="label-note">(varies by insurer)</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="laa-nonprof-rate" class="input-field" value="1.5" min="0" max="5" step="0.1">
+                                <span class="currency-symbol">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Switzerland Specific: LPP Reference Link -->
+                        <div class="input-group country-specific ch-only" style="display: none;">
+                            <div class="info-box">
+                                <i class="fas fa-info-circle"></i>
+                                <span>LPP (2nd pillar) – Swiss pension reference: 
+                                    <a href="https://www.ciepp.ch/" target="_blank" rel="noopener noreferrer" class="external-link">
+                                        www.ciepp.ch <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <div class="calculate-btn-wrapper">
+                    <button type="button" id="calculate-btn" class="calculate-btn">
+                        <i class="fas fa-calculator"></i> Calculate
+                    </button>
+                </div>
+            </section>
+
+            <!-- B2B Input Section -->
+            <section class="input-section" id="b2b-inputs" style="display: none;">
+                <div class="input-grid">
+                    <!-- Employee Name -->
+                    <div class="input-group">
+                        <label for="b2b-employee-name">
+                            <i class="fas fa-user"></i> Employee Name
+                        </label>
+                        <input type="text" id="b2b-employee-name" class="input-field" placeholder="e.g. John Doe">
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="input-group">
+                        <label for="b2b-date-of-birth">
+                            <i class="fas fa-calendar"></i> Date of Birth
+                        </label>
+                        <input type="date" id="b2b-date-of-birth" class="input-field">
+                    </div>
+
+                    <!-- Role / Position -->
+                    <div class="input-group">
+                        <label for="b2b-employee-role">
+                            <i class="fas fa-briefcase"></i> Role / Position
+                        </label>
+                        <input type="text" id="b2b-employee-role" class="input-field" placeholder="e.g. Senior Developer">
+                    </div>
+
+                    <!-- Contractor Cost -->
+                    <div class="input-group">
+                        <label for="b2b-daily-cost">
+                            <i class="fas fa-money-bill-wave"></i> Contractor Cost
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="b2b-daily-cost" class="input-field" placeholder="e.g. 500" value="500" min="0" step="0.01">
+                            <span class="currency-symbol" id="b2b-cost-currency-symbol">EUR</span>
+                            <select id="b2b-cost-currency" class="input-field" style="width: auto; max-width: 80px; margin-left: 5px;">
+                                <option value="EUR" selected>EUR</option>
+                                <option value="CHF">CHF</option>
+                                <option value="RON">RON</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Cost Unit Selector -->
+                    <div class="input-group">
+                        <label for="b2b-cost-unit">
+                            <i class="fas fa-clock"></i> Cost Unit
+                        </label>
+                        <select id="b2b-cost-unit" class="input-field">
+                            <option value="day" selected>Per Day</option>
+                            <option value="hour">Per Hour</option>
+                        </select>
+                    </div>
+
+                    <!-- Working Days per Year -->
+                    <div class="input-group">
+                        <label for="b2b-working-days">
+                            <i class="fas fa-calendar-alt"></i> Working Days per Year
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="b2b-working-days" class="input-field" value="220" min="1" max="365" step="1">
+                            <span class="currency-symbol">days</span>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Mode Selector -->
+                    <div class="input-group">
+                        <label for="b2b-pricing-mode"><i class="fas fa-chart-line"></i> Pricing Mode</label>
+                        <select id="b2b-pricing-mode" class="input-field">
+                            <option value="margin" selected>Target Margin %</option>
+                            <option value="rate">Client Daily Rate</option>
+                            <option value="budget_margin">Client budget</option>
+                        </select>
+                    </div>
+
+                    <!-- Target Margin % (shown when margin selected) -->
+                    <div class="input-group" id="b2b-margin-group">
+                        <label for="b2b-target-margin">
+                            <i class="fas fa-percentage"></i> Target Margin %
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="b2b-target-margin" class="input-field" value="30" min="0" max="100" step="0.1">
+                            <span class="currency-symbol">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Client Daily Rate (shown when rate selected) -->
+                    <div class="input-group" id="b2b-rate-group" style="display: none;">
+                        <label for="b2b-client-rate">
+                            <i class="fas fa-hand-holding-usd"></i> Client Daily Rate
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="b2b-client-rate" class="input-field" placeholder="e.g. 750" value="750" min="0" step="0.01">
+                            <select id="b2b-client-rate-currency" class="currency-selector">
+                                <option value="EUR" selected>EUR</option>
+                                <option value="CHF">CHF</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Budget Margin Mode Inputs (shown when budget_margin selected) -->
+                    <div class="input-group" id="b2b-client-budget-group" style="display: none;">
+                        <label for="b2b-client-budget">
+                            <i class="fas fa-wallet"></i> Client Budget per Day
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="b2b-client-budget" class="input-field" placeholder="e.g. 800" value="800" min="0" step="0.01">
+                            <select id="b2b-client-budget-currency" class="currency-selector">
+                                <option value="EUR" selected>EUR</option>
+                                <option value="CHF">CHF</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="b2b-budget-margin-group" style="display: none;">
+                        <label for="b2b-budget-target-margin">
+                            <i class="fas fa-percentage"></i> Target Margin %
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="b2b-budget-target-margin" class="input-field" value="30" min="0" max="99.9" step="0.1">
+                            <span class="currency-symbol">%</span>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <!-- Calculate Button -->
+                <div class="calculate-btn-wrapper">
+                    <button type="button" id="b2b-calculate-btn" class="calculate-btn">
+                        <i class="fas fa-calculator"></i> Calculate
+                    </button>
+                </div>
+            </section>
+
+            <!-- Allocation Input Section -->
+            <section class="input-section" id="allocation-inputs" style="display: none;">
+                <div class="input-grid">
+                    <!-- Salary at 100% -->
+                    <div class="input-group">
+                        <label for="allocation-salary-100">
+                            <i class="fas fa-money-bill-wave"></i> Salary at 100% (Annual)
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="allocation-salary-100" class="input-field" placeholder="e.g. 160000" value="160000" min="0" step="1">
+                            <span class="currency-symbol">CHF</span>
+                        </div>
+                    </div>
+
+                    <!-- Engagement % -->
+                    <div class="input-group">
+                        <label for="allocation-engagement-pct">
+                            <i class="fas fa-percentage"></i> Engagement %
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="allocation-engagement-pct" class="input-field" value="80" min="0" max="100" step="0.1">
+                            <span class="currency-symbol">%</span>
+                        </div>
+                    </div>
+
+                    <!-- Employer Multiplier -->
+                    <div class="input-group">
+                        <label for="allocation-multiplier">
+                            <i class="fas fa-times"></i> Employer Multiplier
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="allocation-multiplier" class="input-field" value="1.20" min="1.00" max="5.00" step="0.01">
+                            <span class="currency-symbol">×</span>
+                        </div>
+                    </div>
+
+                    <!-- Working Days per Year -->
+                    <div class="input-group">
+                        <label for="allocation-working-days">
+                            <i class="fas fa-calendar-alt"></i> Working Days per Year
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="number" id="allocation-working-days" class="input-field" value="220" min="1" max="365" step="1">
+                            <span class="currency-symbol">days</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Allocations -->
+                <div class="allocation-clients-section">
+                    <h3><i class="fas fa-users"></i> Client Allocations</h3>
+                    <p class="help-text">Add clients and their allocation percentages. Total allocation % must not exceed engagement %.</p>
+                    
+                    <!-- Client Table -->
+                    <div class="allocation-clients-table" id="allocation-clients-table">
+                        <!-- Will be populated by JS -->
+                    </div>
+
+                    <!-- Add Client Button -->
+                    <button type="button" id="allocation-add-client-btn" class="add-client-btn">
+                        <i class="fas fa-plus"></i> Add Client
+                    </button>
+                </div>
+
+                <!-- Validation Message -->
+                <div id="allocation-validation-msg" class="validation-message" style="display: none;"></div>
+
+                <!-- Calculate Button -->
+                <div class="calculate-btn-wrapper">
+                    <button type="button" id="allocation-calculate-btn" class="calculate-btn">
+                        <i class="fas fa-calculator"></i> Calculate
+                    </button>
+                </div>
+            </section>
+
+            <!-- Allocation Results Section -->
+            <section id="allocation-results-section" class="results-section" style="display: none;">
+                <div class="results-card">
+                    <h2><i class="fas fa-chart-pie"></i> Allocation Profitability Results</h2>
+                    
+                    <!-- Summary Metrics -->
+                    <div class="allocation-summary" id="allocation-summary">
+                        <!-- Will be populated by JS -->
+                    </div>
+
+                    <!-- Client Breakdown Table -->
+                    <div class="allocation-client-results">
+                        <h3><i class="fas fa-table"></i> Client Breakdown</h3>
+                        <div id="allocation-client-table">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Buttons -->
+                <div class="export-buttons">
+                    <button type="button" id="allocation-print-btn" class="export-btn">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="results-section" style="display: none;">
+                <!-- Business Outputs -->
+                <div class="results-card">
+                    <h2><i class="fas fa-chart-line"></i> Business Outputs</h2>
+                    
+                    <div class="business-inputs">
+                        <!-- Margin Type Selector -->
+                        <div class="input-group">
+                            <label for="margin-input-type">Margin Input Type</label>
+                            <select id="margin-input-type" class="input-field">
+                                <option value="percentage" selected>Margin as Percentage</option>
+                                <option value="fixed">Fixed Daily Amount</option>
+                            </select>
+                        </div>
+
+                        <!-- Reference Currency -->
+                        <div class="input-group">
+                            <label for="reference-currency">Reference Currency</label>
+                            <select id="reference-currency" class="input-field">
+                                <option value="EUR" selected>EUR</option>
+                                <option value="CHF">CHF</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Margin Percentage Input (shown when percentage selected) -->
+                        <div class="input-group" id="margin-percentage-group">
+                            <label for="margin-percentage">Target Margin %</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="margin-percentage" class="input-field" value="30" min="0" max="100" step="0.1">
+                                <span class="currency-symbol">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Fixed Amount Input (shown when fixed selected) -->
+                        <div class="input-group" id="fixed-amount-group" style="display: none;">
+                            <label for="fixed-daily-amount">Fixed Daily Amount</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="fixed-daily-amount" class="input-field" value="0" min="0" step="0.01">
+                                <span class="currency-symbol" id="fixed-currency">EUR</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="business-outputs" id="business-outputs">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Payroll Outputs -->
+                <div class="results-card">
+                    <h2><i class="fas fa-money-bill-wave"></i> Payroll Summary</h2>
+                    <div class="payroll-summary" id="payroll-summary">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Salary Benchmark (Switzerland Employee Mode Only) -->
+                <div class="results-card" id="salary-benchmark-card" style="display: none;">
+                    <h2><i class="fas fa-chart-bar"></i> Swiss Salary Benchmark</h2>
+                    <div class="salary-benchmark" id="salary-benchmark">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown -->
+                <div class="results-card">
+                    <h2><i class="fas fa-table"></i> Detailed Breakdown</h2>
+                    <div class="breakdown-table-wrapper" id="breakdown-table">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Formula Transparency -->
+                <div class="results-card">
+                    <button type="button" class="collapsible-header" id="formula-toggle">
+                        <h2><i class="fas fa-function"></i> Calculation Steps & Formulas</h2>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="formula-content" class="formula-content" style="display: none;">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Export Actions -->
+                <div class="export-actions">
+                    <button type="button" id="export-pdf-btn" class="action-btn">
+                        <i class="fas fa-file-pdf"></i> Export to PDF
+                    </button>
+                    <button type="button" id="print-btn" class="action-btn">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loading Indicator -->
+            <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                <div class="spinner"></div>
+                <p>Calculating...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="error-text"></span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Technology Staffing Group. All rights reserved.</p>
+            <p class="disclaimer">This calculator provides estimates based on current tax rules. Please consult with a tax professional for accurate advice.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/fxService.js"></script>
+    <script src="js/salaryBenchmark.js"></script>
+    <script src="js/swissSalaryData.js"></script>
+    <script src="js/rules/romania.js"></script>
+    <script src="js/rules/switzerland.js"></script>
+    <script src="js/rules/spain.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/allocation.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
